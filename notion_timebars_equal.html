@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Time Bars — Equal</title>
+  <style>
+    :root{
+      --bg: #ffffff;
+      --fg: #111111;
+      --track: #e6e6e6;
+      --fill: #111111;
+      --label: #4b4b4b;
+      --radius: 999px;
+      --padX: 10px;
+      --padY: 8px;
+      --gap: 8px;
+      --maxw: 100%; /* fits narrow Notion column */
+      --barH: 10px; /* Equal thickness for all bars */
+      --labelW: 62px; /* wider for mixed case labels */
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg: #000000;
+        --fg: #eeeeee;
+        --track: #1f1f1f;
+        --fill: #eeeeee;
+        --label: #aaaaaa;
+      }
+    }
+    html,body{
+      height:100%;
+      margin:0;
+      background:var(--bg);
+      color:var(--fg);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color-scheme: light dark;
+    }
+    .wrap{
+      max-width: var(--maxw);
+      width: 100%;
+      box-sizing: border-box;
+      padding: var(--padY) var(--padX);
+    }
+    .stack{ display:flex; flex-direction: column; gap: var(--gap); }
+    .row{ display:flex; align-items: center; gap: 8px; }
+    .label{
+      width: var(--labelW);
+      font-size: 12px;
+      line-height: 1;
+      color: var(--label);
+      user-select: none;
+      white-space: nowrap;
+    }
+    .track{
+      position: relative;
+      flex: 1;
+      height: var(--barH); /* equal thickness */
+      background: var(--track);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .fill{
+      position: absolute;
+      inset: 0 auto 0 0; /* left to right fill */
+      width: 0%;
+      background: var(--fill);
+      border-radius: var(--radius);
+      transition: width 0.6s ease;
+    }
+    .track:focus-visible{ outline: 2px solid var(--fill); outline-offset: 2px; }
+  </style>
+</head>
+<body>
+  <div class="wrap" role="group" aria-label="Time progress bars">
+    <div class="stack" id="stack">
+      <div class="row day">
+        <div class="label">Day</div>
+        <div class="track" tabindex="0" role="progressbar" aria-label="Day progress" aria-valuemin="0" aria-valuemax="100">
+          <div class="fill" id="bar-day"></div>
+        </div>
+      </div>
+      <div class="row week">
+        <div class="label">Week</div>
+        <div class="track" tabindex="0" role="progressbar" aria-label="Week progress" aria-valuemin="0" aria-valuemax="100">
+          <div class="fill" id="bar-week"></div>
+        </div>
+      </div>
+      <div class="row month">
+        <div class="label">Month</div>
+        <div class="track" tabindex="0" role="progressbar" aria-label="Month progress" aria-valuemin="0" aria-valuemax="100">
+          <div class="fill" id="bar-month"></div>
+        </div>
+      </div>
+      <div class="row year">
+        <div class="label">Year</div>
+        <div class="track" tabindex="0" role="progressbar" aria-label="Year progress" aria-valuemin="0" aria-valuemax="100">
+          <div class="fill" id="bar-year"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Minimal config (monochrome; bars only) ---
+    const CONFIG = {
+  startOfDayHour: 0,  // change to your wake-up hour, e.g. 6  weekStart: 1,       // 1 = Monday (ISO), 0 = Sunday  mode: "elapsed",  show: { day: true, week: true, month: true, year: true }
+};
+
+    const els = {
+      day: document.getElementById("bar-day"),
+      week: document.getElementById("bar-week"),
+      month: document.getElementById("bar-month"),
+      year: document.getElementById("bar-year")
+    };
+
+    function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+    function pct(n){ return (n*100).toFixed(6) + "%"; }
+
+    function startOfShiftedDay(now, startHour){
+      const d = new Date(now);
+      const base = new Date(d.getFullYear(), d.getMonth(), d.getDate(), startHour, 0, 0, 0);
+      if(d.getHours() < startHour) base.setDate(base.getDate() - 1);
+      return base;
+    }
+
+    function addDays(d, n){ const x = new Date(d); x.setDate(x.getDate()+n); return x; }
+    function startOfWeekISO(now, weekStart){
+      const d = new Date(now);
+      const current = d.getDay(); // 0..6, Sun..Sat
+      let diff = current - weekStart;
+      if(diff < 0) diff += 7;
+      const start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0,0,0,0);
+      start.setDate(start.getDate() - diff);
+      return start;
+    }
+    function startOfMonth(d){ return new Date(d.getFullYear(), d.getMonth(), 1); }
+    function startOfNextMonth(d){ return new Date(d.getFullYear(), d.getMonth()+1, 1); }
+    function startOfYear(d){ return new Date(d.getFullYear(), 0, 1); }
+    function startOfNextYear(d){ return new Date(d.getFullYear()+1, 0, 1); }
+
+    function progressBetween(start, end, now){
+      const span = end - start;
+      if(span <= 0) return 0;
+      return clamp((now - start)/span, 0, 1);
+    }
+
+    function update(){
+      const now = new Date();
+
+      // DAY
+      if(CONFIG.show.day && els.day){
+        const dayStart = startOfShiftedDay(now, CONFIG.startOfDayHour);
+        const dayEnd = addDays(dayStart, 1);
+        const p = progressBetween(dayStart, dayEnd, now);
+        const val = CONFIG.mode === "elapsed" ? p : 1-p;
+        els.day.style.width = pct(val);
+        els.day.parentElement.setAttribute("aria-valuenow", Math.round(p*100));
+      }
+
+      // WEEK
+      if(CONFIG.show.week && els.week){
+        const weekStart = startOfWeekISO(now, CONFIG.weekStart);
+        const weekEnd = addDays(weekStart, 7);
+        const p = progressBetween(weekStart, weekEnd, now);
+        const val = CONFIG.mode === "elapsed" ? p : 1-p;
+        els.week.style.width = pct(val);
+        els.week.parentElement.setAttribute("aria-valuenow", Math.round(p*100));
+      }
+
+      // MONTH
+      if(CONFIG.show.month && els.month){
+        const mStart = startOfMonth(now);
+        const mEnd = startOfNextMonth(now);
+        const p = progressBetween(mStart, mEnd, now);
+        const val = CONFIG.mode === "elapsed" ? p : 1-p;
+        els.month.style.width = pct(val);
+        els.month.parentElement.setAttribute("aria-valuenow", Math.round(p*100));
+      }
+
+      // YEAR
+      if(CONFIG.show.year && els.year){
+        const yStart = startOfYear(now);
+        const yEnd = startOfNextYear(now);
+        const p = progressBetween(yStart, yEnd, now);
+        const val = CONFIG.mode === "elapsed" ? p : 1-p;
+        els.year.style.width = pct(val);
+        els.year.parentElement.setAttribute("aria-valuenow", Math.round(p*100));
+      }
+    }
+
+    // Update on load and every minute
+    update();
+    setInterval(update, 60_000);
+  </script>
+</body>
+</html>
