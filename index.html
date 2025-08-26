@@ -15,7 +15,7 @@
       --padX: 16px;
       --padY: 16px;
       --gap: 14px;
-      --row-gap: 7px;
+      --row-gap: 10px;
       --maxw: 100%; /* fits narrow Notion column */
       --barH: 12px; /* slightly thicker bars */
       --labelW: 72px; /* wider for mixed case labels */
@@ -61,7 +61,7 @@
       height: var(--barH); /* equal thickness */
       background: var(--track);
       border-radius: var(--radius);
-      border: 1px solid var(--border);
+      box-shadow: 0 0 0 1px var(--border);
       box-sizing: border-box;
       overflow: hidden;
     }
@@ -70,7 +70,7 @@
       inset: 0 auto 0 0; /* left to right fill */
       width: 0%;
       background: var(--fill);
-      border-radius: var(--radius);
+      border-radius: 0 var(--radius) var(--radius) 0;
       transition: width 0.6s ease;
     }
     .track:focus-visible{ outline: 2px solid var(--fill); outline-offset: 2px; }
