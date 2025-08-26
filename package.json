@@ -1,0 +1,9 @@
+{
+  "name": "notion-time-bars",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Time progress bars for Notion",
+  "scripts": {
+    "test": "node test/test.js"
+  }
+}
