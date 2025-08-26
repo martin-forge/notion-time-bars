@@ -104,8 +104,11 @@
   <script>
     // --- Minimal config (monochrome; bars only) ---
     const CONFIG = {
-  startOfDayHour: 0,  // change to your wake-up hour, e.g. 6  weekStart: 1,       // 1 = Monday (ISO), 0 = Sunday  mode: "elapsed",  show: { day: true, week: true, month: true, year: true }
-};
+      startOfDayHour: 0,  // change to your wake-up hour, e.g. 6
+      weekStart: 1,       // 1 = Monday (ISO), 0 = Sunday
+      mode: "elapsed",    // "elapsed" or "remaining"
+      show: { day: true, week: true, month: true, year: true },
+    };
 
     const els = {
       day: document.getElementById("bar-day"),
