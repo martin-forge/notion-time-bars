@@ -8,26 +8,24 @@
     :root{
       --bg: #ffffff;
       --fg: #111111;
-      --track: #e6e6e6;
-      --fill: #111111;
-      --label: #4b4b4b;
+      --track: #ffffff;
+      --fill: var(--fg);
+      --label: var(--fg);
       --radius: 999px;
-      --padX: 10px;
-      --padY: 8px;
-      --gap: 8px;
-      --row-gap: 4px;
+      --padX: 16px;
+      --padY: 16px;
+      --gap: 12px;
+      --row-gap: 8px;
       --maxw: 100%; /* fits narrow Notion column */
-      --barH: 10px; /* Equal thickness for all bars */
-      --labelW: 62px; /* wider for mixed case labels */
+      --barH: 12px; /* slightly thicker bars */
+      --labelW: 72px; /* wider for mixed case labels */
       --border: var(--fg);
     }
     @media (prefers-color-scheme: dark){
       :root{
         --bg: #191919;
-        --fg: #eeeeee;
+        --fg: #ffffff;
         --track: #1f1f1f;
-        --fill: #eeeeee;
-        --label: #aaaaaa;
         --border: var(--fg);
       }
     }
@@ -36,7 +34,8 @@
       margin:0;
       background:var(--bg);
       color:var(--fg);
-      font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size:16px;
       color-scheme: light dark;
     }
     .wrap{
@@ -49,7 +48,7 @@
     .row{ display:flex; align-items: center; gap: var(--row-gap); }
     .label{
       width: var(--labelW);
-      font-size: 12px;
+      font-size: 1rem;
       line-height: 1;
       color: var(--label);
       user-select: none;
