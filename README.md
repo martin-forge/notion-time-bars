@@ -30,6 +30,16 @@ const CONFIG = {
 
 Edit the values, save the file and refresh the browser to apply changes.
 
+## Testing
+
+Run the test suite to verify that the HTML structure has the expected elements:
+
+```
+npm test
+```
+
+This runs a small Node script that checks for the presence of key progress bar elements in `index.html`.
+
 ## Browser compatibility
 
 The page uses modern web features (Flexbox, CSS custom properties and ES6 JavaScript). It works in up-to-date versions of Chrome, Firefox, Safari and Edge. Older browsers, including Internet Explorer, are not supported.
