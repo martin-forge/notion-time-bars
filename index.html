@@ -19,6 +19,7 @@
       --maxw: 100%; /* fits narrow Notion column */
       --barH: 14px; /* slightly thicker bars */
       --labelW: 72px; /* wider for mixed case labels */
+      --borderW: 1px;
       --border: var(--fg);
     }
     @media (prefers-color-scheme: dark){
@@ -61,13 +62,14 @@
       height: var(--barH); /* equal thickness */
       background: var(--track);
       border-radius: var(--radius);
-      box-shadow: 0 0 0 1px var(--border);
+      border: var(--borderW) solid var(--border);
       box-sizing: border-box;
       overflow: hidden;
     }
     .fill{
       position: absolute;
-      inset: 0 auto 0 0; /* left to right fill */
+      top: 0; bottom: 0;
+      left: calc(var(--borderW) * -1); /* overlap border */
       width: 0%;
       background: var(--fill);
       border-radius: 0 var(--radius) var(--radius) 0;

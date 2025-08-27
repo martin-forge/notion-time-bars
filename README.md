@@ -30,6 +30,19 @@ const CONFIG = {
 
 Edit the values, save the file and refresh the browser to apply changes.
 
+## Customization
+
+Visual tweaks are handled through CSS variables defined at the top of `index.html`. Adjusting these values lets you resize or restyle any part of the widget:
+
+- `font-size` on the `html, body` rule changes the base text size.
+- `--barH` controls bar thickness.
+- `--labelW` sets the width of the text labels.
+- `--gap` is the vertical space between rows; `--row-gap` is the gap between a label and its bar.
+- `--padX` / `--padY` adjust the page padding, while `--maxw` caps the overall width.
+- `--radius`, `--borderW`, `--border`, `--track`, `--fill` and `--label` let you tune colors and shapes.
+
+After editing a variable, save the file and reload the page to see the change. Because the fill overlaps the border by `--borderW`, artifacts will not appear even if you change the bar height or border width.
+
 ## Testing
 
 Run the test suite to verify that the HTML structure has the expected elements:
